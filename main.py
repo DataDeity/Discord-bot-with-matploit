@@ -1,56 +1,73 @@
 import matplotlib.pyplot as plt
 import discord
 import io
+import datetime
 
 intents = discord.Intents.default()
 intents.message_content = True
 
 client = discord.Client(intents=intents)
 
+counts = {}
+
 @client.event
 async def on_ready():
     print(f'We have logged in as {client.user}')
 
-def some_plot_function():
-    # Data goes here!!!
-    x = [1, 2, 3, 4]
-    y = [1, 4, 9, 16]
 
-    
+async def update_and_plot(client, channel_id):
+
+    current_time = datetime.datetime.now()
+    counts[current_time] = counts.get(current_time, 0) + 1
+
+
     fig, ax = plt.subplots()
+    ax.plot(list(counts.keys()), list(counts.values()))
+    ax.set_xlabel('Time')
+    ax.set_ylabel('Count')
 
-    
-    ax.plot(x, y)
 
-    
-    ax.set_xlabel('x')
-    ax.set_ylabel('y')
+    buf = io.BytesIO()
+    fig.savefig(buf, format='png')
+    buf.seek(0)
 
-    return fig
+
+    file = discord.File(buf, filename='plot.png')
+    channel = client.get_channel(channel_id)
+    await channel.send(file=file)
+
+
+    plt.close(fig)
 
 
 @client.event
 async def on_message(message):
-    async def send_plot_to_discord(client, plot_function, channel_id):
-        
-        fig = plot_function()
+    async def update_and_plot(client, channel_id):
 
-        # When saving using buf makes it so much easier cause then its unnecessary to download each png
+        current_time = datetime.datetime.now()
+        counts[current_time] = counts.get(current_time, 0) + 1
+
+
+        fig, ax = plt.subplots()
+        ax.plot(list(counts.keys()), list(counts.values()))
+        ax.set_xlabel('Time')
+        ax.set_ylabel('Count')
+
+
         buf = io.BytesIO()
         fig.savefig(buf, format='png')
         buf.seek(0)
 
-        
+
         file = discord.File(buf, filename='plot.png')
-        await message.author.send(channel_id, file=file)
+        channel = client.get_channel(channel_id)
+        await channel.send(file=file)
 
-        # Close the plot and clear it from memory
+
         plt.close(fig)
-
     if message.author == client.user:
         return
-    if message.content == "!plot":
-        await send_plot_to_discord(client, some_plot_function, message.channel)
+    if "winner" in message.content.lower():
+        await update_and_plot(client, message.channel.id)
 
-
-client.run('Discord bot key here')
+client.run('MTA1NjMyNzYyOTE5NzgyNDEwMA.G-dv4C.NZcvfc-UpmDbWG4oaDZjgw0GlgAZNKtGGhFbRE')
