@@ -70,4 +70,4 @@ async def on_message(message):
     if "winner" in message.content.lower():
         await update_and_plot(client, message.channel.id)
 
-client.run('MTA1NjMyNzYyOTE5NzgyNDEwMA.G-dv4C.NZcvfc-UpmDbWG4oaDZjgw0GlgAZNKtGGhFbRE')
+client.run('Discord bot token')
