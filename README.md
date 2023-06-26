@@ -1,57 +1,96 @@
-<!-- Best-README-Template -->
-<!-- Project Shields -->
-[![Contributors][contributors-shield]][contributors-url]
-[![Forks][forks-shield]][forks-url]
-[![Stargazers][stars-shield]][stars-url]
-[![Issues][issues-shield]][issues-url]
-[![MIT License][license-shield]][license-url]
-[![LinkedIn][linkedin-shield]][linkedin-url]
+# Discord Bot Plotter
 
-<!-- Project Logo -->
-<br />
-<div align="center">
-  <h3 align="center">Discord Bot with Plotting</h3>
-  <p align="center">
-    A Discord bot that plots message counts over time!
-    <br />
-    <a href="#about-the-project"><strong>Explore the README »</strong></a>
-    <br />
-    <br />
-    <a href="https://github.com/your_username/repo_name">View Demo</a>
-    ·
-    <a href="https://github.com/your_username/repo_name/issues">Report Bug</a>
-    ·
-    <a href="https://github.com/your_username/repo_name/issues">Request Feature</a>
-  </p>
-</div>
+This is a Python code snippet that demonstrates a Discord bot capable of plotting and updating a graph based on certain messages received.
 
-<!-- Table of Contents -->
-<details>
-  <summary>Table of Contents</summary>
-  <ol>
-    <li><a href="#about-the-project">About The Project</a></li>
-    <li><a href="#getting-started">Getting Started</a></li>
-    <li><a href="#usage">Usage</a></li>
-    <li><a href="#license">License</a></li>
-    <li><a href="#contact">Contact</a></li>
-  </ol>
-</details>
+## Prerequisites
 
-<!-- About The Project -->
-## About The Project
+To run this code, you need to have the following dependencies installed:
 
-This project is a Discord bot that plots the message counts over time. It utilizes the `discord` library and `matplotlib` for plotting.
+- `matplotlib`: A plotting library for Python.
+- `discord.py`: An API wrapper for Discord written in Python.
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+You can install these dependencies using `pip` by running the following command:
 
-<!-- Getting Started -->
-## Getting Started
+```
+pip install matplotlib discord.py
+```
 
-To get started with this bot, follow these steps:
+## Usage
 
-### Prerequisites
+1. Import the necessary libraries:
 
-- Python 3.x
-- Install the required libraries by running the following command:
-  ```shell
-  pip install discord matplotlib
+```python
+import matplotlib.pyplot as plt
+import discord
+import io
+import datetime
+```
+
+2. Set up the Discord bot:
+
+```python
+intents = discord.Intents.default()
+intents.message_content = True
+
+client = discord.Client(intents=intents)
+```
+
+3. Define a dictionary to keep track of message counts:
+
+```python
+counts = {}
+```
+
+4. Set up an event handler for when the bot is ready:
+
+```python
+@client.event
+async def on_ready():
+    print(f'We have logged in as {client.user}')
+```
+
+5. Define a function to update and plot the graph:
+
+```python
+async def update_and_plot(client, channel_id):
+    current_time = datetime.datetime.now()
+    counts[current_time] = counts.get(current_time, 0) + 1
+
+    fig, ax = plt.subplots()
+    ax.plot(list(counts.keys()), list(counts.values()))
+    ax.set_xlabel('Time')
+    ax.set_ylabel('Count')
+
+    buf = io.BytesIO()
+    fig.savefig(buf, format='png')
+    buf.seek(0)
+
+    file = discord.File(buf, filename='plot.png')
+    channel = client.get_channel(channel_id)
+    await channel.send(file=file)
+
+    plt.close(fig)
+```
+
+6. Set up an event handler for when a message is received:
+
+```python
+@client.event
+async def on_message(message):
+    if message.author == client.user:
+        return
+    if "winner" in message.content.lower():
+        await update_and_plot(client, message.channel.id)
+```
+
+7. Run the Discord bot by providing your bot token:
+
+```python
+client.run('Discord bot token')
+```
+
+Make sure to replace `'Discord bot token'` with your actual Discord bot token.
+
+## License
+
+This code is released under the [MIT License](https://opensource.org/licenses/MIT).
