@@ -12,7 +12,9 @@ To run this code, you need to have the following dependencies installed:
 You can install these dependencies using `pip` by running the following command:
 
 ```
-pip install matplotlib discord.py
+pip install matplotlib
+
+pip install discord.py==1.7.3
 ```
 
 ## Usage
