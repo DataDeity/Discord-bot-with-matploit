@@ -14,7 +14,7 @@ You can install these dependencies using `pip` by running the following command:
 ```
 pip install matplotlib
 
-pip install discord.py==1.7.3
+pip install discord.py
 ```
 
 ## Usage
