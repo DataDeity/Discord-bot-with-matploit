@@ -93,4 +93,4 @@ Make sure to replace `'Discord bot token'` with your actual Discord bot token.
 
 ## License
 
-This code is released under the [MIT License](https://opensource.org/licenses/MIT).
+This project is licensed under the [MIT License](LICENSE).
